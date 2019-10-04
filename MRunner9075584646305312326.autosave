@@ -1,0 +1,119 @@
+  int tick = 0, score = 0, gameScreen = 1, blockHealthLvl, song, bonus = 0;
+  float speed = 0.5, fast = speed*2, regular = speed; //whenever the speed increases, so do both of these values
+  PFont f;
+  Player p = new Player();
+  Star[] stars = new Star[100];
+  final static ArrayList<Bullet> bullet = new ArrayList();
+ // Block b = new Block();                //delete
+  
+  void setup(){
+    size(480,852);
+    background(255);
+    stroke(0);
+    fill(255);
+    for (int i = 0; i < stars.length; i++){
+      stars[i] = new Star();
+    }
+    
+  }
+                      //main method 
+  void draw(){
+    background(0);
+    stroke(255);
+    
+   // b.run();                                   //delete
+    p.run();
+    checkShoot();
+    drawHUD();
+    
+    
+    //draw stars
+    for (int i = 0; i < stars.length; i++){
+      stars[i].run();
+    }
+    //draw all bullets
+    for (Bullet currentBullet : bullet ) { 
+      currentBullet.run();
+    }
+    endCalc();
+  }                  //end of main method
+  
+  //does the calculations at the end of every frame
+  void endCalc(){
+    //for the bonus overflow thing
+    if (bonus >= 1900){
+      bonus = 0;
+    }
+    //use this code to remove a bullet
+    for (int i = 0; i < bullet.size(); i++) { 
+      Bullet b = bullet.get(i); 
+      if (b.y < 0){
+        bullet.remove(i);
+      }
+    }
+    
+    
+  }
+  
+  //check if the player is shooting
+  void checkShoot() {
+    if (mousePressed && mouseButton == LEFT && p.frame == 0) {
+      p.frame = 1;
+      bullet.add ( new Bullet(p.x));
+    }
+    if((mousePressed && mouseButton != LEFT ) || mousePressed == false){
+      bonus++;
+    }
+    
+    //speed up time!                                              fix with blocks later
+    if (mousePressed && mouseButton == RIGHT ){
+      speed = fast;
+      for (Bullet currentBullet : bullet ) { 
+        currentBullet.speed = 20;
+      }
+      for (int i = 0; i < stars.length; i++){
+          stars[i].speedx2 = true;
+      }
+      bonus++;
+    }
+    else{
+      speed = regular;
+      for (Bullet currentBullet : bullet ) { 
+        currentBullet.speed = 10;
+      }
+      for (int i = 0; i < stars.length; i++){
+        stars[i].speedx2 = false;
+      }
+    }
+    
+  }
+  
+  //draw heads up display
+  void drawHUD(){
+    f = createFont("Arial",80,true);
+    textFont(f,20);
+      
+    //does the bonus bar
+    noFill();
+    stroke(128);
+    rect(80,800,380,20,5);
+    noStroke();
+    fill(128);
+    rect(80, 800, bonus/5, 20, 5);
+    fill(255);
+    text("Bonus: ",10,818);
+    
+    //other info
+    text("Lives: " + p.health, 392, 780);
+    text("Score: " + speed, 10, 780);
+    
+    
+    //for(int i = 0; i <= 9; i++){
+    //  stroke(255);
+    //  fill(192);
+    //  rect(i*60, 0, 60, 60);
+    //}
+    
+    //line of defense
+    
+  }
